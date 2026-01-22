@@ -1,4 +1,4 @@
-const accessKey = "FxDHAM1YeZgvWzsUp6wF3iu62Xtzdn1Wukpt24Hgbhs";
+const accessKey="FxDHAM1YeZgvWzsUp6wF3iu62Xtzdn1Wukpt24Hgbhs";
 
 const searchForm = document.getElementById("search-form");
 const searchBox = document.getElementById("search-box");
@@ -9,18 +9,39 @@ let keyword = "";
 let page = 1;
 
 async function searchImages() {
-    keyword = searchBox.ariaValueMax;
-    const url = `https://api.unsplash.com/search/collections?page=${page}&query= ${keyword}&client_id= ${accessKey}`;
+    keyword = searchBox.value;
+    const url = `https://api.unsplash.com/search/collections?page=${page}&query=${keyword}&client_id=${accessKey}&per_page=12`;
    // https://api.unsplash.com/search/collections?page=1&query=office&client_id=FxDHAM1YeZgvWzsUp6wF3iu62Xtzdn1Wukpt24Hgbhs
 
     const response = await fetch(url);
     const data = await response.json();
 
-    console.log(data);
+    if(page === 1) {
+        searchResult.innerHTML = "";
+    }
+
+    const results = data.results;
+
+    results.map((result) => {
+        const image = document.createElement("img");
+        image.src = result.cover_photo.urls.small;
+        const imageLink = document.createElement("a");
+        imageLink.href = result.links.html;
+        imageLink.target = "_blank";
+
+        imageLink.appendChild(image);
+        searchResult.appendChild(imageLink);
+    });
+    showMoreBtn.style.display = "block";
 }
 
 searchForm.addEventListener("submit", (e) => {
     e.preventDefault();
     page = 1;
     searchImages();
-})
+});
+
+showMoreBtn.addEventListener("click", () => {
+    page++;
+    searchImages();
+});
